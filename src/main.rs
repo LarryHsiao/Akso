@@ -3,7 +3,7 @@ mod habitica_todo;
 
 use clap::{App, Arg};
 use crate::habitica_todo::HabiticaTodos;
-use crate::akso::Todos;
+use crate::akso::{Todos, Todo};
 
 fn main() {
     let matches = App::new("akso")
@@ -64,11 +64,17 @@ fn main() {
 
 fn fetch_todo(todos: &dyn Todos) {
     println!("tasks: {}", todos.all().len());
+    let mut index = 0;
     todos.all().iter().for_each(|todo| {
-        println!("{} {}", &todo.id(), todo.title())
+        index = index + 1;
+        println!("{} {}", index, todo.title())
     });
 }
 
 fn finish_task(todos: &dyn Todos, id: String) {
-    todos.finish(id)
+    let idx:usize = id.parse().unwrap();
+    let all = todos.all();
+    let selected = all.get(idx).unwrap();
+    println!("Finish todo: {}", selected.title());
+    todos.finish(selected.id());
 }
