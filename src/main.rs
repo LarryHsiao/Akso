@@ -29,25 +29,25 @@ fn main() {
                 .help("User Id for accessing the Habitica data.")
         )
         .arg(
-            Arg::with_name("tasks")
+            Arg::with_name("todos")
                 .short("t")
-                .long("tasks")
-                .value_name("User tasks")
+                .long("todos")
+                .value_name("User todos")
                 .takes_value(false)
-                .help("Show the current tasks of this user")
+                .help("Show the current todos of this user")
         )
         .get_matches();
     let todos = HabiticaTodos{
         api_key: matches.value_of("api_key").unwrap().to_string(),
         user_id: matches.value_of("user_id").unwrap().to_string()
     };
-    let task_cmd = matches.index_of("tasks");
+    let task_cmd = matches.index_of("todos");
     if task_cmd.is_some() {
-        listing(&todos)
+        fetch_todo(&todos)
     }
 }
 
-fn listing(todos: &dyn Todos) {
+fn fetch_todo(todos: &dyn Todos) {
     println!("tasks: {}", todos.all().len());
     todos.all().iter().for_each(|todo| {
         println!("{} {}", &todo.id()[..5], todo.title())
