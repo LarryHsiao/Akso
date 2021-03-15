@@ -36,20 +36,39 @@ fn main() {
                 .takes_value(false)
                 .help("Show the current todos of this user")
         )
+        .arg(
+            Arg::with_name("finish")
+                .short("f")
+                .long("finish")
+                .value_name("Finish a todo")
+                .takes_value(true)
+                .help("Mark a todo as completed.")
+        )
         .get_matches();
-    let todos = HabiticaTodos{
+    let todos = HabiticaTodos {
         api_key: matches.value_of("api_key").unwrap().to_string(),
-        user_id: matches.value_of("user_id").unwrap().to_string()
+        user_id: matches.value_of("user_id").unwrap().to_string(),
     };
     let task_cmd = matches.index_of("todos");
     if task_cmd.is_some() {
         fetch_todo(&todos)
+    }
+    let finish_cmd = matches.index_of("finish");
+    if finish_cmd.is_some() {
+        finish_task(
+            &todos,
+            matches.value_of("finish").unwrap().to_string(),
+        )
     }
 }
 
 fn fetch_todo(todos: &dyn Todos) {
     println!("tasks: {}", todos.all().len());
     todos.all().iter().for_each(|todo| {
-        println!("{} {}", &todo.id()[..5], todo.title())
+        println!("{} {}", &todo.id(), todo.title())
     });
+}
+
+fn finish_task(todos: &dyn Todos, id: String) {
+    todos.finish(id)
 }

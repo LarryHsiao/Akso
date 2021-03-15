@@ -10,7 +10,7 @@ pub struct HabiticaTodos {
 
 impl Todos for HabiticaTodos {
     fn all(&self) -> Vec<Box<dyn Todo>> {
-        let url = format!("{}{}", HOST, "/tasks/user");
+        let url = format!("{}/tasks/user", HOST);
         let body = reqwest::blocking::Client::new()
             .get(&url)
             .query(&[("type", "todos")])
@@ -45,7 +45,17 @@ impl Todos for HabiticaTodos {
     }
 
     fn finish(&self, id: String) {
-        unimplemented!()
+        let url = format!("{}/tasks/{}/score/up", HOST, id);
+        let res = reqwest::blocking::Client::new()
+            .post(&url)
+            .header("x-api-key", self.api_key.as_str())
+            .header("x-api-user", self.user_id.as_str())
+            .header("Content-Length", 0)
+            .send()
+            .unwrap();
+        if res.status() != 200 {
+            panic!("Finish task failed: {}", res.text().unwrap());
+        }
     }
 
     fn delete(&self, id: String) {
