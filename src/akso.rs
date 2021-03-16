@@ -6,7 +6,7 @@ pub trait Todo {
 
 pub trait Todos {
     fn all(&self) -> Vec<Box<dyn Todo>>;
-    fn create(&self);
+    fn create(&self, title: String);
     fn finish(&self, id: String);
     fn delete(&self, id: String);
 }

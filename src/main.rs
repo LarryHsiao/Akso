@@ -44,6 +44,14 @@ fn main() {
                 .takes_value(true)
                 .help("Mark a todo as completed.")
         )
+        .arg(
+            Arg::with_name("create")
+                .short("create")
+                .long("create")
+                .value_name("Create a todo")
+                .takes_value(true)
+                .help("Create a todo.")
+        )
         .get_matches();
     let todos = HabiticaTodos {
         api_key: matches.value_of("api_key").unwrap().to_string(),
@@ -58,6 +66,13 @@ fn main() {
         finish_task(
             &todos,
             matches.value_of("finish").unwrap().to_string(),
+        )
+    }
+    let create_cmd = matches.index_of("create");
+    if create_cmd.is_some() {
+        create_todo(
+            &todos,
+            matches.value_of("create").unwrap().to_string(),
         )
     }
 }
@@ -77,4 +92,9 @@ fn finish_task(todos: &dyn Todos, id: String) {
     let selected = all.get(idx).unwrap();
     println!("Finish todo: {}", selected.title());
     todos.finish(selected.id());
+}
+
+fn create_todo(todos: &dyn Todos, title: String){
+    todos.create(title);
+    fetch_todo(todos);
 }

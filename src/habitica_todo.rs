@@ -40,8 +40,26 @@ impl Todos for HabiticaTodos {
         return result;
     }
 
-    fn create(&self) {
-        unimplemented!()
+    fn create(&self, title: String) {
+        let url = format!("{}/tasks/user", HOST);
+        let body = format!(
+            r#"{{"type":"todo","text":"{}"}}"#,
+             title
+        );
+        println!("{}", body);
+        let res = reqwest::blocking::Client::new()
+            .post(&url)
+            .header("x-api-key", self.api_key.as_str())
+            .header("x-api-user", self.user_id.as_str())
+            .header("Content-Type", "application/json")
+            .body(
+                body
+            )
+            .send()
+            .unwrap();
+        if res.status() != 201 {
+            panic!("Create the task failed. {}", res.text().unwrap());
+        }
     }
 
     fn finish(&self, id: String) {
