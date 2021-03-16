@@ -66,29 +66,35 @@ fn main() {
     };
     let task_cmd = matches.index_of("todos");
     if task_cmd.is_some() {
-        fetch_todo(&todos)
+        fetch_todo(&todos);
+        return;
     }
     let finish_cmd = matches.index_of("finish");
     if finish_cmd.is_some() {
         finish_task(
             &todos,
             matches.value_of("finish").unwrap().to_string(),
-        )
+        );
+        return;
     }
     let create_cmd = matches.index_of("create");
     if create_cmd.is_some() {
         create_todo(
             &todos,
             matches.value_of("create").unwrap().to_string(),
-        )
+        );
+        return;
     }
     let delete_cmd = matches.index_of("delete");
     if delete_cmd.is_some() {
         delete_todo(
             &todos,
             matches.value_of("delete").unwrap().to_string(),
-        )
+        );
+        return;
     }
+
+    fetch_todo(&todos);
 }
 
 fn fetch_todo(todos: &dyn Todos) {
