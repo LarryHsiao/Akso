@@ -3,7 +3,7 @@ mod habitica_todo;
 
 use clap::{App, Arg};
 use crate::habitica_todo::HabiticaTodos;
-use crate::akso::{Todos, Todo};
+use crate::akso::Todos;
 
 fn main() {
     let matches = App::new("akso")
@@ -52,6 +52,14 @@ fn main() {
                 .takes_value(true)
                 .help("Create a todo.")
         )
+        .arg(
+            Arg::with_name("delete")
+                .short("d")
+                .long("delete")
+                .value_name("delete")
+                .takes_value(true)
+                .help("Delete a todo by given id")
+        )
         .get_matches();
     let todos = HabiticaTodos {
         api_key: matches.value_of("api_key").unwrap().to_string(),
@@ -75,6 +83,13 @@ fn main() {
             matches.value_of("create").unwrap().to_string(),
         )
     }
+    let delete_cmd = matches.index_of("delete");
+    if delete_cmd.is_some() {
+        delete_todo(
+            &todos,
+            matches.value_of("delete").unwrap().to_string(),
+        )
+    }
 }
 
 fn fetch_todo(todos: &dyn Todos) {
@@ -86,15 +101,25 @@ fn fetch_todo(todos: &dyn Todos) {
     });
 }
 
-fn finish_task(todos: &dyn Todos, id: String) {
-    let idx:usize = id.parse().unwrap();
+fn finish_task(todos: &dyn Todos, index: String) {
+    let idx: usize = (index.parse::<i32>().unwrap() - 1) as usize;
     let all = todos.all();
     let selected = all.get(idx).unwrap();
-    println!("Finish todo: {}", selected.title());
+    println!("Todo finished: {}", selected.title());
     todos.finish(selected.id());
+    fetch_todo(todos);
 }
 
 fn create_todo(todos: &dyn Todos, title: String){
     todos.create(title);
+    fetch_todo(todos);
+}
+
+fn delete_todo(todos: &dyn Todos, index: String) {
+    let idx: usize = (index.parse::<i32>().unwrap() - 1) as usize;
+    let all = todos.all();
+    let selected = all.get(idx).unwrap();
+    println!("Todo deleted: {}", selected.title());
+    todos.delete(selected.id());
     fetch_todo(todos);
 }

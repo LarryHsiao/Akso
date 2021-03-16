@@ -77,7 +77,16 @@ impl Todos for HabiticaTodos {
     }
 
     fn delete(&self, id: String) {
-        unimplemented!()
+        let url = format!("{}/tasks/{}", HOST, id);
+        let res = reqwest::blocking::Client::new()
+            .delete(&url)
+            .header("x-api-key", self.api_key.as_str())
+            .header("x-api-user", self.user_id.as_str())
+            .send()
+            .unwrap();
+        if res.status() != 200 {
+            panic!("Delete task failed, id: {}", id)
+        }
     }
 }
 
