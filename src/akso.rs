@@ -9,4 +9,5 @@ pub trait Todos {
     fn create(&self, title: String);
     fn finish(&self, id: String);
     fn delete(&self, id: String);
+    fn do_first(&self, id: String);
 }

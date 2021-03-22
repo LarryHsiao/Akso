@@ -59,6 +59,13 @@ fn main() {
                 .takes_value(true)
                 .help("Delete a todo by given id")
         )
+        .arg(
+            Arg::with_name("do")
+                .long("do")
+                .value_name("Index of the todo")
+                .takes_value(true)
+                .help("Mark a todo as ready-to-do by given id.")
+        )
         .get_matches();
     let todos = HabiticaTodos {
         api_key: matches.value_of("api_key").unwrap().to_string(),
@@ -94,6 +101,15 @@ fn main() {
         return;
     }
 
+    let do_cmd = matches.index_of("do");
+    if do_cmd.is_some() {
+        do_first(
+            &todos,
+            matches.value_of("do").unwrap().to_string()
+        );
+        return;
+    }
+
     fetch_todo(&todos);
 }
 
@@ -109,6 +125,7 @@ fn fetch_todo(todos: &dyn Todos) {
 fn finish_task(todos: &dyn Todos, index: String) {
     let idx: usize = (index.parse::<i32>().unwrap() - 1) as usize;
     let all = todos.all();
+
     let selected = all.get(idx).unwrap();
     println!("Todo finished: {}", selected.title());
     todos.finish(selected.id());
@@ -126,5 +143,14 @@ fn delete_todo(todos: &dyn Todos, index: String) {
     let selected = all.get(idx).unwrap();
     println!("Todo deleted: {}", selected.title());
     todos.delete(selected.id());
+    fetch_todo(todos);
+}
+
+fn do_first(todos: &dyn Todos, index: String) {
+    let idx: usize = (index.parse::<i32>().unwrap() - 1) as usize;
+    let all = todos.all();
+    let selected = all.get(idx).unwrap();
+    println!("Todo marked as doing first: {}", selected.title());
+    todos.do_first(selected.id());
     fetch_todo(todos);
 }
