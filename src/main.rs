@@ -64,7 +64,14 @@ fn main() {
                 .long("do")
                 .value_name("Index of the todo")
                 .takes_value(true)
-                .help("Mark a todo as ready-to-do by given id.")
+                .help("Mark a todo as ready-to-do by given index.")
+        )
+        .arg(
+            Arg::with_name("last")
+                .long("last")
+                .value_name("Index of the todo")
+                .takes_value(true)
+                .help("Mark a todo as last-doing todo by given index.")
         )
         .get_matches();
     let todos = HabiticaTodos {
@@ -106,6 +113,15 @@ fn main() {
         do_first(
             &todos,
             matches.value_of("do").unwrap().to_string()
+        );
+        return;
+    }
+
+    let last_cmd = matches.index_of("last");
+    if last_cmd.is_some() {
+        do_last(
+            &todos,
+            matches.value_of("last").unwrap().to_string()
         );
         return;
     }
@@ -152,5 +168,14 @@ fn do_first(todos: &dyn Todos, index: String) {
     let selected = all.get(idx).unwrap();
     println!("Todo marked as doing first: {}", selected.title());
     todos.do_first(selected.id());
+    fetch_todo(todos);
+}
+
+fn do_last(todos: &dyn Todos, index: String) {
+    let idx: usize = (index.parse::<i32>().unwrap() - 1) as usize;
+    let all = todos.all();
+    let selected = all.get(idx).unwrap();
+    println!("Todo marked as doing last: {}", selected.title());
+    todos.do_last(selected.id());
     fetch_todo(todos);
 }

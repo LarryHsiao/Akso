@@ -102,6 +102,21 @@ impl Todos for HabiticaTodos {
             panic!("Can't mark todo as doing first, id: {},\nexception:{}", id, res.text().unwrap())
         }
     }
+
+
+    fn do_last(&self, id: String) {
+        let url = format!("{}/tasks/{}/move/to/{}", HOST, id, -1);
+        let res = reqwest::blocking::Client::new()
+            .post(&url)
+            .header("x-api-key", self.api_key.as_str())
+            .header("x-api-user", self.user_id.as_str())
+            .header("Content-Length", "0")
+            .send()
+            .unwrap();
+        if res.status() != 200 {
+            panic!("Can't mark todo as doing first, id: {},\nexception:{}", id, res.text().unwrap())
+        }
+    }
 }
 
 pub struct HabiticaTodo {
